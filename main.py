@@ -3,6 +3,8 @@ from flask import Flask,session
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
 from flask_session import Session
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 
 
 app = Flask(__name__)
@@ -30,10 +32,15 @@ sr = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 # 初始化Session存储
 Session(app)
 
+# 创建管理器
+mgr = Manager(app)
+# 添加迁移命令
+mgr.add_command('mc', MigrateCommand)
+
 @app.route('/')
 def index():
     session["name"] = "zs"
     return "index"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    mgr.run()
